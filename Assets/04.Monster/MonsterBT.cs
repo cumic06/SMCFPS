@@ -45,12 +45,7 @@ public class MonsterBT : MonoBehaviour
 
         while (true)
         {
-            //if (findType)
-            //{
-            //    Debug.Log($"<color=blue> Follow </color>");
-            //    yield return StartCoroutine(Follow());
-            //}
-            if(monster.NavMeshAgent != null)
+            if (monster.NavMeshAgent != null)
                 monster.NavMeshAgent.SetDestination(Player.Instance.transform.position);
 
             Debug.Log($"<color=blue> Attack </color>");
@@ -155,7 +150,6 @@ public class MonsterBT : MonoBehaviour
             if (!monster.NavMeshAgent.pathPending)
             {
                 monster.NavMeshAgent.SetDestination(Player.Instance.transform.position);
-                yield return null;
             }
             yield return null;
         }
@@ -166,10 +160,6 @@ public class MonsterBT : MonoBehaviour
     #region Attack
     public IEnumerator Attack()
     {
-        bool meleeAttackType = monster.GetMonsterAttackType() == MonsterAttackType.MeleeAttack;
-        bool farAttackType = monster.GetMonsterAttackType() == MonsterAttackType.FarAttack;
-        bool AllAttackType = monster.GetMonsterAttackType() == MonsterAttackType.All;
-
         if (findType)
         {
             monster.SetNavMeshStoppingDistance(monster.GetMonsterStat().attackStat.AttackRange);
@@ -180,17 +170,17 @@ public class MonsterBT : MonoBehaviour
         sensor.SensorOnOff(false);
         yield return null;
 
-        if (meleeAttackType)
+        switch (monster.GetMonsterAttackType())
         {
-            yield return StartCoroutine(MeleeAttack());
-        }
-        else if (farAttackType)
-        {
-            yield return StartCoroutine(FarAttack());
-        }
-        else if (AllAttackType)
-        {
-            yield return StartCoroutine(AllAttack());
+            case MonsterAttackType.MeleeAttack:
+                yield return StartCoroutine(MeleeAttack());
+                break;
+            case MonsterAttackType.FarAttack:
+                yield return StartCoroutine(FarAttack());
+                break;
+            case MonsterAttackType.All:
+                yield return StartCoroutine(AllAttack());
+                break;
         }
 
         yield return new WaitUntil(() => !sensor.IsCheckPlayer());
@@ -295,7 +285,7 @@ public class MonsterBT : MonoBehaviour
             BulletCreate();
         }
 
-        AudioManager.Instance.Play(shootSFXName, SoundType.SFX);    
+        AudioManager.Instance.Play(shootSFXName, SoundType.SFX);
     }
 
     private void BulletCreate()

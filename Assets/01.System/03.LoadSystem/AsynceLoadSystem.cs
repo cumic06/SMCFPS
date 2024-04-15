@@ -19,7 +19,6 @@ public class AsynceLoadSystem : MonoBehaviour
     public static void LoadGameScene(EStage stageEnum)
     {
         nextScene = (int)stageEnum;
-        Debug.Log(nextScene);
         SceneManager.LoadScene((int)EStage.LoadScene);
     }
 
@@ -33,17 +32,13 @@ public class AsynceLoadSystem : MonoBehaviour
         float currentTime = 0;
         AsyncOperation async = SceneManager.LoadSceneAsync(nextScene);
         async.allowSceneActivation = false;
-        yield return null;
-
         loadingText.text = $"{loadTextScriptable.loadTextDatas.GetRandomText()}";
         yield return null;
 
-        Debug.Log(async.isDone);
         while (!async.isDone)
         {
             currentTime += Time.deltaTime;
             loadingHandler.value = currentTime / loadTime;
-
 
             if (currentTime > loadTime && async.progress >= 0.9f)
             {
